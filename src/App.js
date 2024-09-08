@@ -9,11 +9,35 @@ import phoneSvg from "./assets/phone.svg";
 import padlockSvg from "./assets/padlock.svg";
 import cwSvg from "./assets/cw.svg";
 import Footer from "./components/footer/Footer";
+import  axios from "axios";
+import { useState, useEffect } from "react";
 
 const url = "https://randomuser.me/api/";
 const defaultImage = "https://randomuser.me/api/portraits/men/75.jpg";
 
 function App() {
+
+const [users, setUsers] = useState([]);
+
+const [person,setPerson]= useState({});
+const [title,setTitle] = useState("name")
+const [userValue, setUserValue] = useState("");
+
+
+  const nextUser = async () =>{ 
+    const res = await axios.get(url)
+    console.log(res.data)
+    const user=res.data.results[0]
+    setPerson(user)  //person degiskenini yeni aldigimiz apiden gelen degerin icine koyduk user objesi person degiskenin ici olmus oldu state yapisi ile
+    setTitle ("My name is");
+    setUserValue(`${user.name.first} ${user.name.last}`);
+
+  }
+
+  useEffect(() => {
+    nextUser();
+  }, []);
+
   return (
     <main>
       <div className="block bcg-orange">
@@ -21,9 +45,9 @@ function App() {
       </div>
       <div className="block">
         <div className="container">
-          <img src={defaultImage} alt="random user" className="user-img" />
-          <p className="user-title">My ... is</p>
-          <p className="user-value"></p>
+          <img src={person.picture?.large} alt="random user" className="user-img" />
+          <p className="user-title">{title} is</p>
+          <p className="user-value">{userValue}</p>
           <div className="values-list">
             <button className="icon" data-label="name">
               <img src={womanSvg} alt="user" id="iconImg" />
@@ -45,7 +69,7 @@ function App() {
             </button>
           </div>
           <div className="btn-group">
-            <button className="btn" type="button">
+            <button className="btn" type="button" onClick={nextUser} >
               new user
             </button>
             <button className="btn" type="button">
